@@ -1,4 +1,5 @@
-﻿using Prackticheskaya_2024.News;
+﻿using AutoMapper;
+using Prackticheskaya_2024.News;
 using Prackticheskaya_2024.Users;
 
 namespace Prackticheskaya_2024

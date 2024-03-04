@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Prackticheskaya_2024.News
@@ -7,10 +8,13 @@ namespace Prackticheskaya_2024.News
     [Route("news")]
     public class NewsController : Controller
     {
+
         private readonly DatabaseContext _context;
-        public NewsController(DatabaseContext context)
+        private readonly IMapper _mapper;
+        public NewsController(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         /// <summary>
         /// Выводит список новостей
@@ -23,10 +27,13 @@ namespace Prackticheskaya_2024.News
         [ProducesResponseType(404)]
         public async Task<IActionResult> Index()
         {
-            return _context.News != null
-            ? Ok(await _context.News.Include(n => n.Author).OrderByDescending(n =>
-            n.CreatedAt).Take(100).ToListAsync())
-            : NotFound();
+            if (_context.News == null)
+            {
+                return NotFound();
+            }
+            var items = await _context.News.Include(n => n.Author).OrderByDescending(n =>
+            n.CreatedAt).Take(100).ToListAsync();
+            return Ok(_mapper.Map<NewsDTO[]>(items));
         }
         /// <summary>
         /// Выводит новость по id
