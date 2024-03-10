@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Prackticheskaya_2024.Comments;
 using Prackticheskaya_2024.News;
 using Prackticheskaya_2024.Users;
 
@@ -23,6 +24,7 @@ namespace Prackticheskaya_2024
                 Password = "Kazakistan",
             });
         }
+        public DbSet<CommentsEntity> Comments => Set<CommentsEntity>();
         public DbSet<UserEntity> Users => Set<UserEntity>();
         public DbSet<NewsEntity> News => Set<NewsEntity>();
     }
