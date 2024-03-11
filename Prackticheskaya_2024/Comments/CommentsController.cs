@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,12 @@ namespace Prackticheskaya_2024.Comments
     public class CommentsController : Controller
     {
         private readonly DatabaseContext _context;
+        private readonly IMapper _mapper;
 
-        public CommentsController(DatabaseContext context)
+        public CommentsController(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -32,9 +35,12 @@ namespace Prackticheskaya_2024.Comments
         [ProducesResponseType(404)]
         public async Task<IActionResult> Index()
         {
-              return _context.Comments != null ? 
-                          View(await _context.Comments.ToListAsync()) :
-                          Problem("Entity set 'DatabaseContext.Comments'  is null.");
+            if (_context.Comments == null)
+            {
+                return NotFound();
+            }
+            var items = await _context.Comments.Include(n => n.User).Take(100).ToListAsync();
+            return Ok(_mapper.Map<CommentsDTO[]>(items));
         }
 
         /// <summary>
@@ -79,6 +85,7 @@ namespace Prackticheskaya_2024.Comments
                 var created = new CommentsEntity
                 {
                     Text = comment.Text,
+                    NewsId = comment.NewsId,
                     UserId  = 1 //временное решение для указания авторства
                 };
                 _context.Add(created);
@@ -118,7 +125,7 @@ namespace Prackticheskaya_2024.Comments
 
                 try
                 {
-                    var editable = await _context.Comments.Include(n => n.Text).FirstAsync(n => n.Id == id);
+                    var editable = await _context.Comments.FirstAsync(n => n.Id == id);
                     if (editable == null)
                     {
                         return NotFound();
@@ -162,10 +169,13 @@ namespace Prackticheskaya_2024.Comments
             if (commentsEntity != null)
             {
                 _context.Comments.Remove(commentsEntity);
+                await _context.SaveChangesAsync();
+                return Accepted();
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            else
+            {
+                return NotFound();
+            }
         }
 
         private bool CommentsEntityExists(int id)

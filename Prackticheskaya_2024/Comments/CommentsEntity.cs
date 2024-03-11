@@ -6,6 +6,7 @@ namespace Prackticheskaya_2024.Comments
     {
         public int Id { get; set; }
         public string Text { get; set; } = "";
+        public int NewsId { get; set; }
         public NewsEntity News { get; set; }
         public int UserId { get; set; }
         public UserEntity User { get; set; }

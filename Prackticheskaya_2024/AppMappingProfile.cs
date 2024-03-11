@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Prackticheskaya_2024.Comments;
 using Prackticheskaya_2024.News;
 using Prackticheskaya_2024.Users;
 
@@ -10,6 +11,7 @@ namespace Prackticheskaya_2024
         {
             CreateMap<UserEntity, UserDTO>();
             CreateMap<NewsEntity, NewsDTO>();
+            CreateMap<CommentsEntity, CommentsDTO>();
         }
     }
 }

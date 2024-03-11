@@ -10,6 +10,8 @@ namespace Prackticheskaya_2024.Comments
         [Required]
         [MinLength(3)]
         public string Text { get; set; }
+        [Required]
+        public int NewsId {  get; set; }
     }
     public class CommentsDTO
     {
